@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EduSys 教学辅助系统</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 0; }
+        h1 { background: #4a90e2; color: #fff; padding: 20px; margin: 0; }
+        nav { background: #eee; padding: 10px 20px; }
+        nav a { margin-right: 20px; color: #4a90e2; text-decoration: none; font-weight: bold; }
+        .table { width: 100%; border-collapse: collapse; background: #fff; margin-top: 20px; }
+        .table th, .table td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        .table th { background: #f0f0f0; }
+        .btn, .btn-edit, .btn-delete, .btn-cancel { display: inline-block; padding: 6px 16px; margin: 2px; border-radius: 4px; text-decoration: none; font-size: 14px; }
+        .btn { background: #4a90e2; color: #fff; border: none; }
+        .btn-edit { background: #f5a623; color: #fff; border: none; }
+        .btn-delete { background: #d0021b; color: #fff; border: none; }
+        .btn-cancel { background: #aaa; color: #fff; border: none; }
+        .form { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px #eee; margin-top: 20px; }
+        label { display: inline-block; width: 60px; text-align: right; margin-right: 10px; }
+        input, select { padding: 6px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        button { cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>EduSys 教学辅助系统</h1>
+    <nav>
+        <a href="/students/">学生管理</a>
+        <!-- 可扩展其他导航 -->
+    </nav>
+    <hr>
+    <div style="max-width: 800px; margin: auto;">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
