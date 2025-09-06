@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>课程列表</h2>
+<a class="btn" href="#">➕ 添加课程</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>课程编号</th>
+            <th>课程名称</th>
+            <th>授课教师</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+    <!-- 课程数据循环 -->
+    <tr>
+        <td>CS101</td>
+        <td>Python程序设计</td>
+        <td>张老师</td>
+        <td>
+            <a class="btn-edit" href="#">编辑</a>
+            <a class="btn-delete" href="#">删除</a>
+        </td>
+    </tr>
+    <!-- 可用 Django 模板变量替换 -->
+    </tbody>
+</table>
+{% endblock %}

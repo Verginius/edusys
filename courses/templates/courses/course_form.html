@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>添加/编辑课程</h2>
+<form method="post" class="form">
+    {% csrf_token %}
+    <label>课程编号：</label><input type="text" name="course_id" required><br>
+    <label>课程名称：</label><input type="text" name="name" required><br>
+    <label>授课教师：</label><input type="text" name="teacher" required><br>
+    <button class="btn" type="submit">保存</button>
+    <a class="btn-cancel" href="#">取消</a>
+</form>
+{% endblock %}

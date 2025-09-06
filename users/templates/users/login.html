@@ -1,0 +1,17 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<h2>用户登录</h2>
+{% if messages %}
+    {% for message in messages %}
+        <div style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %};">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+<form method="post" class="form">
+    {% csrf_token %}
+    <label>用户名：</label><input type="text" name="username" required><br>
+    <label>密码：</label><input type="password" name="password" required><br>
+    <button class="btn" type="submit">登录</button>
+</form>
+<a href="{% url 'register' %}">注册新用户</a>
+{% endblock %}
