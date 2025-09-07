@@ -26,7 +26,7 @@
 - users/ 用户认证
 
 ## 启动方法
-1. 激活 Python 环境
+1. 激活 Python 环境 `conda activate [env name]`
 2. 安装依赖：`pip install -r requirements.txt`
 3. 迁移数据库：`python manage.py migrate`
 4. 启动服务：`python manage.py runserver`
