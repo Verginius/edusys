@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>课程中心</h2>
+{% if messages %}
+    {% for message in messages %}
+        <script>
+            alert("{{ message|escapejs }}");
+        </script>
+    {% endfor %}
+{% endif %}
+{% if user.is_superuser %}
+<div style="text-align: right; margin-bottom: 16px;">
+    <a href="{% url 'course_add' %}" style="padding: 8px 20px; background: #4a90e2; color: #fff; border-radius: 8px; text-decoration: none; font-weight: bold; box-shadow: 0 2px 8px #eee;">添加课程</a>
+</div>
+{% endif %}
+<div style="display:flex;flex-wrap:wrap;gap:32px;justify-content:center;margin-top:32px;width:100%;max-width:1600px;margin-left:auto;margin-right:auto;">
+    {% for course in courses %}
+    <div style="width:100%;max-width:220px;height:220px;background:#f0f4fa;border-radius:16px;box-shadow:0 2px 8px #eee;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:box-shadow 0.2s;" onclick="location.href='{% url 'course_detail' course.id %}'">
+        <div style="font-size: 22px; font-weight: bold; color: #4a90e2; margin-bottom: 12px;">{{ course.name }}</div>
+        <div style="font-size: 16px; color: #888;">{{ course.teacher }}</div>
+        <div style="margin-top: 18px; color: #aaa;">点击进入详情</div>
+    </div>
+    {% empty %}
+    <div>暂无课程</div>
+    {% endfor %}
+</div>
+{% endblock %}

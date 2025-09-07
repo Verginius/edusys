@@ -1,17 +1,29 @@
 
 {% extends 'base.html' %}
 {% block content %}
-<h2>用户登录</h2>
+<h2 style="text-align:center;font-size:2rem;color:#4a90e2;margin-bottom:32px;letter-spacing:2px;">用户登录</h2>
 {% if messages %}
+    <div style="max-width:400px;margin:0 auto 18px auto;">
     {% for message in messages %}
-        <div style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %};">{{ message }}</div>
+    {% if message.tags == 'error' %}
+    <div style="padding:10px 0;text-align:center;border-radius:6px;font-size:15px;background:#ffeaea;color:#d0021b;">{{ message }}</div>
+    {% else %}
+    <div style="padding:10px 0;text-align:center;border-radius:6px;font-size:15px;background:#eafaf1;color:#4a90e2;">{{ message }}</div>
+    {% endif %}
     {% endfor %}
+    </div>
 {% endif %}
-<form method="post" class="form">
+<div style="max-width:400px;margin:auto;">
+<form method="post" class="form" style="box-sizing:border-box;width:100%;background:#fff;padding:32px 24px;border-radius:12px;box-shadow:0 2px 12px #eee;">
     {% csrf_token %}
-    <label>用户名：</label><input type="text" name="username" required><br>
-    <label>密码：</label><input type="password" name="password" required><br>
-    <button class="btn" type="submit">登录</button>
+    <label style="width:90px;font-size:15px;color:#333;">用户名：</label><input type="text" name="username" required style="width:calc(100% - 110px);font-size:15px;">
+    <br>
+    <label style="width:90px;font-size:15px;color:#333;">密码：</label><input type="password" name="password" required style="width:calc(100% - 110px);font-size:15px;">
+    <br>
+    <button class="btn" type="submit" style="width:100%;margin-top:18px;">登录</button>
 </form>
-<a href="{% url 'register' %}">注册新用户</a>
+<div style="text-align:center;margin-top:18px;">
+    <a href="{% url 'register' %}" style="color:#4a90e2;text-decoration:underline;font-size:15px;">注册新用户</a>
+</div>
+</div>
 {% endblock %}

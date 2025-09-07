@@ -1,11 +1,13 @@
 
 {% extends 'base.html' %}
 {% block content %}
-<h2>确认删除学生</h2>
-<p>确定要删除学生 <strong>{{ student.name }}</strong> ({{ student.student_id }}) 吗？</p>
-<form method="post">
-    {% csrf_token %}
-    <button class="btn-delete" type="submit">确认删除</button>
-    <a class="btn-cancel" href="{% url 'student_list' %}">取消</a>
-</form>
+<h2 style="text-align:center;font-size:2rem;color:#d0021b;margin-bottom:32px;letter-spacing:2px;">确认删除学生</h2>
+<div style="max-width:500px;margin:0 auto;background:#fff;padding:32px 24px;border-radius:12px;box-shadow:0 2px 12px #eee;">
+    <p style="font-size:16px;color:#333;text-align:center;margin-bottom:24px;">确定要删除学生 <strong style="color:#d0021b;">{{ student.name }}</strong> ({{ student.student_id }}) 吗？</p>
+    <form method="post" style="display:flex;justify-content:center;gap:24px;">
+        {% csrf_token %}
+        <button class="btn-delete" type="submit" style="padding:8px 32px;">确认删除</button>
+        <a class="btn-cancel" href="{% url 'student_list' %}" style="padding:8px 32px;">取消</a>
+    </form>
+</div>
 {% endblock %}

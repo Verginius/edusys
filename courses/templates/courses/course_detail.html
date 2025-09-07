@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{{ course.name }} - 详情</h2>
+<div style="display:flex;gap:24px;">
+    <nav style="display:flex;flex-direction:column;gap:12px;min-width:120px;">
+        <a href="{% url 'course_announcement' course.id %}" class="btn">公告</a>
+        <a href="{% url 'course_outline' course.id %}" class="btn">大纲</a>
+        <a href="{% url 'course_files' course.id %}" class="btn">文件</a>
+        <a href="{% url 'course_people' course.id %}" class="btn">人员</a>
+    </nav>
+    <div style="flex:1;">
+        {% block course_content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

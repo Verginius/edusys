@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{{ edit|default_if_none:False|yesno:'编辑公告,添加公告' }}</h2>
+<form method="post" style="width:100%;max-width:1600px;margin:32px auto;background:#f8fafd;padding:32px;border-radius:12px;box-shadow:0 2px 8px #eee;">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" style="padding: 8px 24px; background: #4a90e2; color: #fff; border: none; border-radius: 8px; font-weight: bold;">保存</button>
+    <a href="{% url 'course_announcement' course.id %}" style="margin-left: 16px; color: #888; text-decoration: underline;">取消</a>
+</form>
+{% endblock %}

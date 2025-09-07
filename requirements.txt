@@ -1,4 +1,4 @@
-django==4.2.7
+django==5.2
 gunicorn>=21.2.0
 sqlite3>=3.41.2
 djangorestframework>=3.14.0

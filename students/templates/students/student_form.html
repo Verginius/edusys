@@ -1,18 +1,18 @@
 
 {% extends 'base.html' %}
 {% block content %}
-<h2>{% if student %}编辑学生{% else %}添加学生{% endif %}</h2>
-<form method="post" class="form">
+<h2 style="text-align:center;font-size:2rem;color:#4a90e2;margin-bottom:32px;letter-spacing:2px;">{% if student %}编辑学生{% else %}添加学生{% endif %}</h2>
+<form method="post" class="form" style="background:#fff;padding:32px 24px;border-radius:12px;box-shadow:0 2px 12px #eee;max-width:500px;margin:0 auto;">
     {% csrf_token %}
     <label>学号：</label><input type="text" name="student_id" value="{{ student.student_id|default:'' }}" required><br>
     <label>姓名：</label><input type="text" name="name" value="{{ student.name|default:'' }}" required><br>
     <label>性别：</label>
-    <select name="gender">
+    <select name="gender" style="width:calc(100% - 110px);">
         <option value="男" {% if student.gender == '男' %}selected{% endif %}>男</option>
         <option value="女" {% if student.gender == '女' %}selected{% endif %}>女</option>
     </select><br>
     <label>学院：</label><input type="text" name="college" value="{{ student.college|default:'' }}" required><br>
-    <button class="btn" type="submit">保存</button>
-    <a class="btn-cancel" href="{% url 'student_list' %}">取消</a>
+    <button class="btn" type="submit" style="width:100%;margin-top:18px;">保存</button>
+    <a class="btn-cancel" href="{% url 'student_list' %}" style="width:100%;margin-top:10px;display:inline-block;text-align:center;">取消</a>
 </form>
 {% endblock %}

@@ -1,12 +1,11 @@
+
 {% extends 'base.html' %}
 {% block content %}
-<h2>添加/编辑课程</h2>
-<form method="post" class="form">
+<h2>添加课程</h2>
+<form method="post" style="width:100%;max-width:500px;margin:32px auto;background:#f8fafd;padding:32px 24px;border-radius:12px;box-shadow:0 2px 12px #eee;">
     {% csrf_token %}
-    <label>课程编号：</label><input type="text" name="course_id" required><br>
-    <label>课程名称：</label><input type="text" name="name" required><br>
-    <label>授课教师：</label><input type="text" name="teacher" required><br>
-    <button class="btn" type="submit">保存</button>
-    <a class="btn-cancel" href="#">取消</a>
+    {{ form.as_p }}
+    <button type="submit" style="padding: 8px 24px; background: #4a90e2; color: #fff; border: none; border-radius: 8px; font-weight: bold;">保存</button>
+    <a href="{% url 'course_grid' %}" style="margin-left: 16px; color: #888; text-decoration: underline;">取消</a>
 </form>
 {% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'courses/course_detail.html' %}
+{% block course_content %}
+<h3 style="font-size:24px;color:#4a90e2;margin-bottom:24px;">课程大纲</h3>
+<div style="max-width:900px;margin:auto;background:#f8fafd;padding:32px 24px;border-radius:16px;box-shadow:0 2px 12px #eee;">
+	{% if is_superuser and not edit_mode %}
+		<div style="text-align:right;margin-bottom:18px;">
+			<a href="?edit=1" class="btn-edit" style="font-size:15px;">编辑大纲</a>
+		</div>
+	{% endif %}
+	{% if is_superuser and edit_mode %}
+		<form method="post">
+			{% csrf_token %}
+			<textarea id="outline-editor" name="outline" style="width:100%;height:320px;padding:16px;font-size:16px;border-radius:8px;border:1px solid #ddd;resize:vertical;">{{ course.outline|default_if_none:"" }}</textarea>
+			<button type="submit" class="btn" style="margin-top:18px;">保存</button>
+			<a href="{% url 'course_outline' course.id %}" class="btn-cancel" style="margin-left:16px;">取消</a>
+		</form>
+		<script src="https://cdn.jsdelivr.net/npm/@ckeditor/ckeditor5-build-classic/build/ckeditor.js"></script>
+		<script>
+			ClassicEditor.create(document.querySelector('#outline-editor'));
+		</script>
+	{% else %}
+		<div style="font-size:17px;line-height:1.8;color:#333;min-height:120px;">{{ course.outline|linebreaks|default:"暂无课程大纲" }}</div>
+	{% endif %}
+</div>
+{% endblock %}

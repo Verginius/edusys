@@ -4,15 +4,36 @@
 <h2>用户注册</h2>
 {% if messages %}
     {% for message in messages %}
-        <div style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %};">{{ message }}</div>
+        {% if message.tags == 'error' %}
+            <div style="color: red;">{{ message }}</div>
+        {% else %}
+            <div style="color: green;">{{ message }}</div>
+        {% endif %}
     {% endfor %}
 {% endif %}
-<form method="post" class="form">
+<div style="max-width:400px;margin:auto;">
+<form method="post" class="form" style="box-sizing:border-box;width:100%;">
     {% csrf_token %}
-    <label>用户名：</label><input type="text" name="username" required><br>
-    <label>密码：</label><input type="password" name="password" required><br>
-    <label>确认密码：</label><input type="password" name="password2" required><br>
-    <button class="btn" type="submit">注册</button>
+    <label style="width:80px;">身份：</label>
+    <select name="role" required style="width:calc(100% - 100px);">
+        <option value="student">学生</option>
+        <option value="teacher">教师</option>
+    </select><br>
+    <label style="width:80px;">学号/工号：</label><input type="text" name="user_id" required style="width:calc(100% - 100px);"><br>
+    <label style="width:80px;">姓名：</label><input type="text" name="realname" required style="width:calc(100% - 100px);"><br>
+    <label style="width:80px;">性别：</label>
+    <select name="gender" required style="width:calc(100% - 100px);">
+        <option value="男">男</option>
+        <option value="女">女</option>
+    </select><br>
+    <label style="width:80px;">学院：</label><input type="text" name="college" required style="width:calc(100% - 100px);"><br>
+    <label style="width:80px;">用户名：</label><input type="text" name="username" required style="width:calc(100% - 100px);"><br>
+    <label style="width:80px;">密码：</label><input type="password" name="password" required style="width:calc(100% - 100px);"><br>
+    <label style="width:80px;">确认密码：</label><input type="password" name="password2" required style="width:calc(100% - 100px);"><br>
+    <button class="btn" type="submit" style="width:100%;">注册</button>
 </form>
-<a href="{% url 'login' %}">已有账号？去登录</a>
+<div style="text-align:center;margin-top:10px;">
+    <a href="{% url 'login' %}">已有账号？去登录</a>
+</div>
+</div>
 {% endblock %}

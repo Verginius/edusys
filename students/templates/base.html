@@ -5,31 +5,53 @@
     <title>EduSys 教学辅助系统</title>
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 0; }
-        h1 { background: #4a90e2; color: #fff; padding: 20px; margin: 0; }
-        nav { background: #eee; padding: 10px 20px; }
-        nav a { margin-right: 20px; color: #4a90e2; text-decoration: none; font-weight: bold; }
-        .table { width: 100%; border-collapse: collapse; background: #fff; margin-top: 20px; }
-        .table th, .table td { border: 1px solid #ddd; padding: 10px; text-align: center; }
-        .table th { background: #f0f0f0; }
-        .btn, .btn-edit, .btn-delete, .btn-cancel { display: inline-block; padding: 6px 16px; margin: 2px; border-radius: 4px; text-decoration: none; font-size: 14px; }
-        .btn { background: #4a90e2; color: #fff; border: none; }
-        .btn-edit { background: #f5a623; color: #fff; border: none; }
-        .btn-delete { background: #d0021b; color: #fff; border: none; }
-        .btn-cancel { background: #aaa; color: #fff; border: none; }
-        .form { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px #eee; margin-top: 20px; }
-        label { display: inline-block; width: 60px; text-align: right; margin-right: 10px; }
-        input, select { padding: 6px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        h1 { background: linear-gradient(90deg,#4a90e2 60%,#50e3c2 100%); color: #fff; padding: 28px 0 24px 0; margin: 0; text-align:center; font-size:2.2rem; letter-spacing:2px; box-shadow:0 2px 12px #e0eafc; }
+        nav { background: #fff; padding: 14px 32px; box-shadow:0 2px 8px #eee; display:flex;align-items:center;justify-content:center;flex-wrap:wrap; }
+        nav a { margin: 0 18px; color: #4a90e2; text-decoration: none; font-weight: bold; font-size: 1.08rem; transition: color 0.2s; }
+        nav a:hover { color: #50e3c2; text-decoration:underline; }
+        .table { width: 100%; max-width:1000px; border-collapse: collapse; background: #fff; margin: 32px auto 0 auto; box-shadow:0 2px 8px #eee; border-radius:10px; overflow:hidden; }
+        .table th, .table td { border: 1px solid #e0e0e0; padding: 12px; text-align: center; font-size:15px; }
+        .table th { background: #f0f4fa; font-weight:bold; }
+        .btn, .btn-edit, .btn-delete, .btn-cancel { display: inline-block; padding: 8px 22px; margin: 2px; border-radius: 6px; text-decoration: none; font-size: 15px; font-weight:bold; box-shadow:0 1px 4px #eee; border:none; transition:background 0.2s; }
+        .btn { background: #4a90e2; color: #fff; }
+        .btn:hover { background:#357abd; }
+        .btn-edit { background: #f5a623; color: #fff; }
+        .btn-edit:hover { background:#d48806; }
+        .btn-delete { background: #d0021b; color: #fff; }
+        .btn-delete:hover { background:#a80000; }
+        .btn-cancel { background: #aaa; color: #fff; }
+        .btn-cancel:hover { background:#888; }
+        .form { background: #fff; padding: 28px 24px; border-radius: 12px; box-shadow: 0 2px 12px #eee; margin: 32px auto 0 auto; max-width:500px; }
+        label { display: inline-block; width: 90px; text-align: right; margin-right: 10px; font-size:15px; color:#333; }
+        input, select { padding: 8px; margin-bottom: 14px; border: 1px solid #ccc; border-radius: 6px; font-size:15px; width:calc(100% - 110px); }
+        input[type="checkbox"] { width:auto; }
         button { cursor: pointer; }
+        @media (max-width: 700px) {
+            h1 { font-size:1.3rem; padding:18px 0; }
+            nav { padding:10px 8px; }
+            nav a { font-size:0.98rem; margin:0 8px; }
+            .form { padding:18px 8px; max-width:98vw; }
+            .table { font-size:13px; }
+            label { width:60px; font-size:13px; }
+            input, select { font-size:13px; width:calc(100% - 70px); }
+        }
     </style>
 </head>
 <body>
     <h1>EduSys 教学辅助系统</h1>
+    {% if '/users/login/' not in request.path and '/users/register/' not in request.path %}
     <nav>
         <a href="/students/">学生管理</a>
         <a href="/courses/">课程管理</a>
         <a href="/assignments/">作业管理</a>
-        <a href="/users/login/">用户登录</a>
+        {% if request.user.is_authenticated %}
+            <span style="margin-right:20px;">当前用户：{{ request.user.username }}</span>
+            <a href="/users/logout/" class="btn-cancel">注销</a>
+        {% else %}
+            <a href="/users/login/">用户登录</a>
+        {% endif %}
     </nav>
+    {% endif %}
     <hr>
     <div style="max-width: 800px; margin: auto;">
         {% block content %}{% endblock %}

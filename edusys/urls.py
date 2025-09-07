@@ -16,11 +16,21 @@ Including another URLconf
 """
 
 
+
 from django.contrib import admin
 from django.urls import path, include
+from . import views
 
 urlpatterns = [
+    path("", views.hello, name="hello"),
+    path("admin/login/", views.AdminLoginView.as_view(), name="admin:login"),
     path("admin/", admin.site.urls),
     path("students/", include("students.urls")),
     path("users/", include("users.urls")),
+    path("courses/", include("courses.urls"))
 ]
+
+# 媒体文件开发环境路由
+from django.conf import settings
+from django.conf.urls.static import static
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
