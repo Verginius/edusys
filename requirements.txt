@@ -1,6 +1,5 @@
 django==5.2
 gunicorn>=21.2.0
-sqlite3>=3.41.2
 djangorestframework>=3.14.0
 django-filter>=23.5
 python-dotenv>=1.0.0
