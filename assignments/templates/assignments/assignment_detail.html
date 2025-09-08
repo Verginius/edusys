@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="form" style="max-width:900px;">
+  <h2 style="text-align:center;margin-bottom:24px;">{{ assignment.title }}</h2>
+  <div style="margin-bottom:18px;">
+    <strong>要求：</strong>{{ assignment.description }}<br>
+    <strong>发布时间：</strong>{{ assignment.publish_time }}<br>
+    <strong>截止时间：</strong>{{ assignment.deadline }}
+  </div>
+  {% if is_teacher %}
+    <div style="margin-bottom:18px;">
+      <a href="{% url 'assignment_update' assignment.id %}" class="btn btn-edit">修改</a>
+      <form method="post" action="{% url 'assignment_delete' assignment.id %}" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-delete">删除</button>
+      </form>
+    </div>
+  {% endif %}
+  <hr>
+  {% if not is_teacher %}
+    <h4 style="margin-bottom:12px;">作业提交</h4>
+    {% if user_submission %}
+      <div class="alert alert-success" style="margin-bottom:18px;">
+        你已提交作业：<a href="{{ user_submission.file.url }}">{{ user_submission.file.name|slice:'20:' }}</a>，提交时间：{{ user_submission.submit_time }}<br>
+        {% if user_submission.score or user_submission.comment %}
+          <span style="color:#4a90e2;">分数：</span> {{ user_submission.score|default:'-' }}
+          <span style="color:#4a90e2;margin-left:18px;">评语：</span> {{ user_submission.comment|default:'-' }}
+        {% else %}
+          <span style="color:#aaa;">未批改</span>
+        {% endif %}
+      </div>
+    {% else %}
+      <form method="post" enctype="multipart/form-data" style="margin-bottom:18px;">
+        {% csrf_token %}
+        <div class="form-group" style="margin-bottom:12px;">
+          <label for="file">上传作业文件</label>
+          <input type="file" name="file" id="file" class="form-control" required>
+        </div>
+        <button type="submit" class="btn">提交作业</button>
+      </form>
+    {% endif %}
+  {% endif %}
+  {% if is_teacher %}
+    <h4 style="margin-top:32px;">已提交作业列表</h4>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>文件名称</th>
+          <th>学生姓名</th>
+          <th>学号</th>
+          <th>提交时间</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for submission in submissions %}
+          <tr>
+            <td><a href="{{ submission.file.url }}">{{ submission.file.name|slice:'20:' }}</a></td>
+            <td>{{ submission.student.username }}</td>
+            <td>{{ submission.student.user_id }}</td>
+            <td>{{ submission.submit_time }}</td>
+          </tr>
+          <tr>
+            <td colspan="4" style="background:#f8f8fc;">
+              <form method="post" style="display:flex;align-items:center;gap:12px;">
+                {% csrf_token %}
+                <input type="hidden" name="grade_id" value="{{ submission.id }}">
+                <label>分数：</label>
+                <input type="number" step="0.01" min="0" max="100" name="score" value="{{ submission.score|default:'' }}" style="width:80px;">
+                <label>评语：</label>
+                <input type="text" name="comment" value="{{ submission.comment|default:'' }}" style="width:220px;">
+                <button type="submit" class="btn btn-edit">保存批改</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</div>
+{% endblock %}

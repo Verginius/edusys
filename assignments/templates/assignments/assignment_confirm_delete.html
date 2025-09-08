@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="form" style="max-width:400px;">
+  <h2 style="text-align:center;margin-bottom:24px;">确认删除作业</h2>
+  <div style="text-align:center;margin-bottom:18px;">{{ assignment.title }}</div>
+  <form method="post" style="text-align:center;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-delete">确认删除</button>
+    <a href="{% url 'assignment_detail' assignment.id %}" class="btn btn-cancel">取消</a>
+  </form>
+</div>
+{% endblock %}

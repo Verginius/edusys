@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="form" style="max-width:500px;">
+  <h2 style="text-align:center;margin-bottom:24px;">{% if assignment %}修改作业{% else %}新增作业{% endif %}</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group" style="margin-bottom:18px;">
+      <label for="title">标题</label>
+      <input type="text" name="title" id="title" class="form-control" value="{{ assignment.title|default:'' }}" required>
+    </div>
+    <div class="form-group" style="margin-bottom:18px;">
+      <label for="description">详细要求</label>
+      <textarea name="description" id="description" class="form-control" required>{{ assignment.description|default:'' }}</textarea>
+    </div>
+    <div class="form-group" style="margin-bottom:18px;">
+      <label for="deadline">截止时间</label>
+      <input type="datetime-local" name="deadline" id="deadline" class="form-control" value="{{ assignment.deadline|default:'' }}" required>
+    </div>
+    <div style="text-align:center;">
+      <button type="submit" class="btn">保存</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

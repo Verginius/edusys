@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="form" style="max-width:700px;">
+  <h2 style="text-align:center;margin-bottom:24px;">作业列表</h2>
+  <ul style="list-style:none;padding:0;">
+    {% for assignment in assignments %}
+      <li style="margin-bottom:18px;">
+        <a href="{% url 'assignment_detail' assignment.id %}" class="btn" style="width:100%;text-align:left;">{{ assignment.title }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  {% if is_teacher %}
+    <div style="text-align:right;margin-top:18px;">
+      <a href="{% url 'assignment_create' course.id %}" class="btn">新增作业</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
