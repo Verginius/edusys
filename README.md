@@ -9,6 +9,7 @@
 - 用户认证：自定义用户模型，支持学号/工号，区分教师与学生权限
 - 文件管理：课程相关文件上传、下载、删除，支持多种格式
 - 公告系统：课程公告发布、查看、删除
+- AI 助手：基于 RAG 技术的学生答疑、课程安排辅助和作业智能批改
 - 前端页面：美观卡片式布局，支持权限控制与交互优化
 
 ## 技术栈
@@ -17,20 +18,28 @@
  - SQLite3（默认，可扩展为 MySQL/PostgreSQL）
  - HTML/CSS（Django 模板）
  - Bootstrap（页面美化）
+ - Redis（异步任务队列）
+ - Celery（分布式任务队列）
+ - Langchain（RAG 应用开发框架）
+ - Smolagents（轻量级 AI 代理框架）
 
 ## 目录结构
 - edusys/ 主项目配置
 - courses/ 课程管理
 - students/ 学生管理
 - assignments/ 作业管理
+- agents/ AI 助手应用（RAG 检索增强生成）
 - users/ 用户认证
 
 ## 启动方法
 1. 激活 Python 环境 `conda activate [env name]`
 2. 安装依赖：`pip install -r requirements.txt`
 3. 迁移数据库：`python manage.py migrate`
-4. 启动服务：`python manage.py runserver`
-5. 访问： http://127.0.0.1:8000/
+4. 初始化 agents 应用：`python manage.py init_agents`
+5. 设置 LLM 环境变量（可选，参考 LLM 设置说明）
+6. 启动 Celery worker（新终端）：`celery -A edusys worker -l info`
+7. 启动服务：`python manage.py runserver`
+8. 访问： http://127.0.0.1:8000/
 
 
 ## 权限说明
@@ -57,4 +66,45 @@
 
 ## 参考与扩展
 
+## LLM 设置说明
+
+系统支持多种方式配置大语言模型，可根据硬件条件和需求选择：
+
+### 1. API 方式（推荐）
+支持主流 AI 平台的 API 接口：
+```bash
+# OpenAI 兼容接口
+export AI_ASSISTANT_MODEL_ID="openai/gpt-4"
+export OPENAI_API_KEY="your-api-key"
+
+# HuggingFace Inference API
+export AI_ASSISTANT_MODEL_ID="huggingface/Qwen/Qwen2.5-Coder-32B-Instruct"
+export HUGGINGFACE_API_KEY="your-api-key"
+```
+
+### 2. 本地 LLM 设置
+支持本地部署的大语言模型：
+
+**Ollama 方式**：
+```bash
+# 安装 Ollama 后拉取模型
+ollama pull qwen2.5-coder:32b
+# 设置环境变量
+export AI_ASSISTANT_MODEL_ID="ollama/qwen2.5-coder:32b"
+```
+
+**本地模型文件**：
+```bash
+# 下载模型文件到 models/ 目录
+export AI_ASSISTANT_MODEL_ID="./models/qwen2.5-coder-32b"
+```
+
+### 3. 配置生效
+环境变量需在启动服务前设置：
+```bash
+# 设置环境变量
+export AI_ASSISTANT_MODEL_ID="your-model-id"
+# 启动服务
+python manage.py runserver
+```
 - 可根据 Canvas 平台功能持续扩展，如讨论区、成绩统计、通知推送等
