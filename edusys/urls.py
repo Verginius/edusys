@@ -28,7 +28,7 @@ urlpatterns = [
     path("students/", include("students.urls")),
     path("users/", include("users.urls")),
     path("courses/", include("courses.urls")),
-    path("agents/", include("agents.urls"))
+    path("assignments/", include("assignments.urls")),
 ]
 
 # 媒体文件开发环境路由

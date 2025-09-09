@@ -15,8 +15,9 @@ def course_grid(request):
 	return render(request, 'courses/course_grid.html', {'courses': courses})
 
 def course_detail(request, course_id):
-	course = get_object_or_404(Course, id=course_id)
-	return render(request, 'courses/course_detail.html', {'course': course})
+		course = get_object_or_404(Course, id=course_id)
+		is_teacher = request.user.is_staff or request.user.is_superuser
+		return render(request, 'courses/course_detail.html', {'course': course, 'is_teacher': is_teacher})
 
 def course_announcement(request, course_id):
 	course = get_object_or_404(Course, id=course_id)

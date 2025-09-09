@@ -42,8 +42,7 @@ INSTALLED_APPS = [
     "students",
     "users",
     "courses",
-    "agents",
-    "agents"
+    "assignments"
 ]
 
 # REST Framework 配置
