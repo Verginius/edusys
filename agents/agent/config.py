@@ -14,10 +14,10 @@ class AgentConfig:
     # 默认配置
     DEFAULT_CONFIG = {
         # 模型配置
-        'model_id': 'Qwen/Qwen2.5-Coder-32B-Instruct',
+        'model_id': 'qwen/qwen3-coder',
         'model_kwargs': {
             'temperature': 0.7,
-            'max_tokens': 2048,
+            'max_tokens': 4196,
         },
         
         # 代理配置
@@ -88,8 +88,7 @@ class AgentConfig:
         return {
             'max_steps': self.config.get('max_steps'),
             'verbosity_level': self.config.get('verbosity_level'),
-            'stream_outputs': self.config.get('stream_outputs'),
-            'timeout': self.config.get('timeout')
+            'stream_outputs': self.config.get('stream_outputs')
         }
         
     def get_tools_config(self) -> list:
@@ -113,23 +112,17 @@ class AgentConfig:
 # 预定义的代理配置
 AGENT_CONFIGS = {
     'question_answering': AgentConfig({
-        'model_id': 'Qwen/Qwen2.5-Coder-32B-Instruct',
+        'model_id': 'qwen/qwen3-coder',
         'max_steps': 6,
         'verbosity_level': 2,
         'tools': ['edusys_retriever']
     }),
     
     'course_analysis': AgentConfig({
-        'model_id': 'Qwen/Qwen2.5-Coder-32B-Instruct',
+        'model_id': 'qwen/qwen3-coder',
         'max_steps': 8,
         'verbosity_level': 2,
         'tools': ['edusys_retriever']
     }),
     
-    'assignment_grading': AgentConfig({
-        'model_id': 'Qwen/Qwen2.5-Coder-32B-Instruct',
-        'max_steps': 10,
-        'verbosity_level': 2,
-        'tools': ['edusys_retriever']
-    })
 }

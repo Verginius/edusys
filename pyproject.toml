@@ -27,3 +27,14 @@ dependencies = [
     "sentence-transformers>=5.1.0",
     "smolagents>=1.21.3",
 ]
+
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["agents*", "assignments*", "courses*", "edusys*", "query*", "students*", "users*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.md", "*.txt", "*.yaml", "*.yml", "*.json", "*.toml", "*.cfg", "*.conf", "*.ini", "*.sql", "*.html", "*.css", "*.js", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.svg", "*.ico", "*.woff", "*.woff2", "*.ttf", "*.eot"]

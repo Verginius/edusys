@@ -1,175 +1,192 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 助手 - {{ course.name }}</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-        .question-form {
-            margin-bottom: 20px;
-        }
-        textarea {
-            width: 100%;
-            height: 100px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            resize: vertical;
-        }
-        button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .response {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-left: 4px solid #007bff;
-            margin-top: 20px;
-        }
-        .history {
-            margin-top: 30px;
-        }
-        .history-item {
-            border-bottom: 1px solid #eee;
-            padding: 10px 0;
-        }
-        .history-item:last-child {
-            border-bottom: none;
-        }
-        .loading {
-            display: none;
-            text-align: center;
-            color: #666;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>AI 助手 - {{ course.name }}</h1>
-        
-        <div class="question-form">
-            <form id="ai-form">
-                <textarea id="question" placeholder="请输入您的问题..." required></textarea>
-                <br><br>
-                <button type="submit">提交问题</button>
-            </form>
-        </div>
-        
-        <div class="loading" id="loading">
-            正在处理您的问题，请稍候...
-        </div>
-        
-        <div class="response" id="response" style="display: none;">
-            <h3>AI 回答：</h3>
-            <p id="response-text"></p>
-        </div>
-        
-        <div class="history">
-            <h2>历史记录</h2>
-            <div id="history-list">
-                {% for interaction in interactions %}
-                <div class="history-item">
-                    <strong>问题：</strong>{{ interaction.query }}<br>
-                    <strong>回答：</strong>{{ interaction.response }}<br>
-                    <small>{{ interaction.timestamp|date:"Y-m-d H:i:s" }}</small>
-                </div>
-                {% empty %}
-                <p>暂无历史记录</p>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
+{% extends "base.html" %}
 
-    <script>
-        document.getElementById('ai-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const question = document.getElementById('question').value;
-            if (!question.trim()) {
-                alert('请输入问题');
-                return;
-            }
-            
-            // 显示加载状态
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('response').style.display = 'none';
-            
-            // 发送请求
-            fetch('{% url "agents:ai_assistant" course_id=course.id %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
-                },
-                body: JSON.stringify({
-                    query: question,
-                    interaction_type: 'question'
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // 隐藏加载状态
-                document.getElementById('loading').style.display = 'none';
-                
-                if (data.success) {
-                    // 显示回答
-                    document.getElementById('response-text').textContent = data.data.response;
-                    document.getElementById('response').style.display = 'block';
-                    
-                    // 清空输入框
-                    document.getElementById('question').value = '';
-                } else {
-                    alert('请求失败：' + data.error.message);
-                }
-            })
-            .catch(error => {
-                // 隐藏加载状态
-                document.getElementById('loading').style.display = 'none';
-                alert('请求出错：' + error.message);
-            });
-        });
+{% block content %}
+<div class="chat-container" style="max-width: 800px; margin: 32px auto; display: flex; flex-direction: column; height: 70vh;">
+    <h2 style="text-align: center; color: #333; margin-bottom: 20px;">AI 智能答疑助手</h2>
+    
+    {% if error_message %}
+    <div style="color: red; margin-bottom: 20px;">{{ error_message }}</div>
+    {% endif %}
+    
+    <!-- 对话历史区域 -->
+    <div id="chat-history" style="flex: 1; overflow-y: auto; border: 1px solid #ccc; border-radius: 6px; padding: 15px; background: #f9f9f9; margin-bottom: 20px;">
+        {% for interaction in interactions %}
+        <div class="message user-message" style="margin-bottom: 15px;">
+            <div style="font-weight: bold; color: #4a90e2;">你：</div>
+            <div>{{ interaction.query }}</div>
+            <div style="font-size: 0.8em; color: #999; text-align: right;">{{ interaction.timestamp|date:"Y-m-d H:i:s" }}</div>
+        </div>
+        <div class="message ai-message" style="margin-bottom: 15px; background: #e8f4ff; padding: 10px; border-radius: 6px;">
+            <div style="font-weight: bold; color: #50e3c2;">AI助手：</div>
+            <div>{{ interaction.response }}</div>
+        </div>
+        {% empty %}
+        <div id="no-history" style="text-align: center; color: #999;">暂无对话历史</div>
+        {% endfor %}
+    </div>
+    
+    <!-- 输入区域 -->
+    <div style="margin-bottom: 20px;">
+        <form id="ai-form" style="display: flex; gap: 10px;">
+            <input type="text" id="question" placeholder="请输入您的问题..." required
+                style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px;">
+            <button type="submit" class="btn">发送</button>
+        </form>
+    </div>
+    
+    <div id="loading" style="display: none; text-align: center; color: #666; margin: 20px 0;">
+        AI助手正在思考中...
+    </div>
+</div>
+
+<script>
+    // 获取聊天历史容器
+    const chatHistory = document.getElementById('chat-history');
+    
+    // 滚动到底部
+    function scrollToBottom() {
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+    
+    // 页面加载完成后滚动到底部
+    document.addEventListener('DOMContentLoaded', function() {
+        scrollToBottom();
+    });
+    
+    document.getElementById('ai-form').addEventListener('submit', function(e) {
+        e.preventDefault();
         
-        // 获取 CSRF token
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
+        const question = document.getElementById('question').value;
+        if (!question.trim()) {
+            alert('请输入问题');
+            return;
+        }
+        
+        // 显示加载状态
+        document.getElementById('loading').style.display = 'block';
+        
+        // 禁用输入和按钮
+        document.getElementById('question').disabled = true;
+        document.querySelector('#ai-form button').disabled = true;
+        
+        // 添加用户消息到聊天历史
+        const userMessageDiv = document.createElement('div');
+        userMessageDiv.className = 'message user-message';
+        userMessageDiv.style.marginBottom = '15px';
+        userMessageDiv.innerHTML = `
+            <div style="font-weight: bold; color: #4a90e2;">你：</div>
+            <div>${question}</div>
+            <div style="font-size: 0.8em; color: #999; text-align: right;">刚刚</div>
+        `;
+        chatHistory.appendChild(userMessageDiv);
+        
+        // 清空输入框
+        document.getElementById('question').value = '';
+        
+        // 滚动到底部
+        scrollToBottom();
+        
+        // 发送请求
+        fetch('{% url "agents:general_ai_assistant" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                query: question,
+                interaction_type: 'question'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // 隐藏加载状态
+            document.getElementById('loading').style.display = 'none';
+            
+            // 启用输入和按钮
+            document.getElementById('question').disabled = false;
+            document.querySelector('#ai-form button').disabled = false;
+            
+            if (data.success) {
+                // 添加AI消息到聊天历史
+                const aiMessageDiv = document.createElement('div');
+                aiMessageDiv.className = 'message ai-message';
+                aiMessageDiv.style.marginBottom = '15px';
+                aiMessageDiv.style.background = '#e8f4ff';
+                aiMessageDiv.style.padding = '10px';
+                aiMessageDiv.style.borderRadius = '6px';
+                aiMessageDiv.innerHTML = `
+                    <div style="font-weight: bold; color: #50e3c2;">AI助手：</div>
+                    <div>${data.data.response}</div>
+                `;
+                chatHistory.appendChild(aiMessageDiv);
+                
+                // 移除"暂无对话历史"提示
+                const noHistory = document.getElementById('no-history');
+                if (noHistory) {
+                    noHistory.remove();
+                }
+            } else {
+                // 添加错误消息到聊天历史
+                const errorMessageDiv = document.createElement('div');
+                errorMessageDiv.className = 'message error-message';
+                errorMessageDiv.style.marginBottom = '15px';
+                errorMessageDiv.style.background = '#ffe8e8';
+                errorMessageDiv.style.padding = '10px';
+                errorMessageDiv.style.borderRadius = '6px';
+                errorMessageDiv.innerHTML = `
+                    <div style="font-weight: bold; color: #d0021b;">错误：</div>
+                    <div>请求失败：${data.error.message}</div>
+                    ${data.error.details && data.error.details.error_details ?
+                      `<div style="margin-top: 5px; font-size: 0.9em; color: #666;">详细信息：${data.error.details.error_details}</div>` :
+                      ''}
+                `;
+                chatHistory.appendChild(errorMessageDiv);
+            }
+            
+            // 滚动到底部
+            scrollToBottom();
+        })
+        .catch(error => {
+            // 隐藏加载状态
+            document.getElementById('loading').style.display = 'none';
+            
+            // 启用输入和按钮
+            document.getElementById('question').disabled = false;
+            document.querySelector('#ai-form button').disabled = false;
+            
+            // 添加错误消息到聊天历史
+            const errorMessageDiv = document.createElement('div');
+            errorMessageDiv.className = 'message error-message';
+            errorMessageDiv.style.marginBottom = '15px';
+            errorMessageDiv.style.background = '#ffe8e8';
+            errorMessageDiv.style.padding = '10px';
+            errorMessageDiv.style.borderRadius = '6px';
+            errorMessageDiv.innerHTML = `
+                <div style="font-weight: bold; color: #d0021b;">错误：</div>
+                <div>请求出错：${error.message}</div>
+            `;
+            chatHistory.appendChild(errorMessageDiv);
+            
+            // 滚动到底部
+            scrollToBottom();
+        });
+    });
+    
+    // 获取 CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
                 }
             }
-            return cookieValue;
         }
-    </script>
-</body>
-</html>
+        return cookieValue;
+    }
+</script>
+{% endblock %}

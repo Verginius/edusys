@@ -4,7 +4,7 @@ AI 助手信号处理器
 import logging
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from .models import AIInteraction, ToolUsage
+from agents.models import AIInteraction, ToolUsage
 
 # 配置日志
 logger = logging.getLogger(__name__)

@@ -1,8 +1,8 @@
 """
 AI 助手 URL 路由配置
 """
-from django.urls import path
-from . import views
+from django.urls import path, include
+from agents import views
 
 app_name = 'agents'
 
@@ -14,6 +14,10 @@ urlpatterns = [
     
     # 课程相关的 AI 助手接口
     path('courses/<int:course_id>/ask/', views.ai_assistant_view, name='ai_assistant'),
+    
+    # 通用 AI 助手接口
+    path('ai-assistant/', views.ai_assistant_page, name='ai_assistant_page'),
+    path('ai-assistant/ask/', views.general_ai_assistant_view, name='general_ai_assistant'),
     
     # API 接口
     path('api/', include('agents.api.urls')),

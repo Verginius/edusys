@@ -2,7 +2,7 @@
 AI 助手数据模型
 """
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 from courses.models import Course
 
 class AIInteraction(models.Model):
@@ -11,8 +11,8 @@ class AIInteraction(models.Model):
     用于存储用户与 AI 助手的交互历史，便于后续分析和优化。
     """
     # 基本信息
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ai_interactions')
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='ai_interactions')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ai_interactions')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='ai_interactions', null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     
     # 交互内容
@@ -46,7 +46,8 @@ class AIInteraction(models.Model):
         verbose_name_plural = "AI 交互记录"
 
     def __str__(self):
-        return f"{self.user.username} - {self.course.name} - {self.timestamp}"
+        course_name = self.course.name if self.course else "通用"
+        return f"{self.user.username} - {course_name} - {self.timestamp}"
 
 
 class KnowledgeDocument(models.Model):
@@ -61,7 +62,8 @@ class KnowledgeDocument(models.Model):
             ('course_outline', '课程大纲'),
             ('announcement', '课程公告'),
             ('assignment_answer', '作业标准答案'),
-            ('faq', '常见问题')
+            ('faq', '常见问题'),
+            ('course_file', '课程文件')
         ],
         help_text="文档来源类型"
     )

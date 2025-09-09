@@ -35,17 +35,6 @@ AI_ASSISTANT_CONFIG = {
         'separators': ["\n\n", "\n", ".", "!", "?", " ", ""],
     },
     
-    # 异步任务配置
-    'CELERY_CONFIG': {
-        'broker_url': 'redis://localhost:6379/0',
-        'result_backend': 'redis://localhost:6379/0',
-        'task_serializer': 'json',
-        'accept_content': ['json'],
-        'result_serializer': 'json',
-        'timezone': 'UTC',
-        'enable_utc': True,
-    },
-    
     # 缓存配置
     'CACHE_CONFIG': {
         'CACHE_TIMEOUT': 3600,  # 1小时
@@ -78,12 +67,6 @@ def get_config_from_env():
     if model_id:
         config['DEFAULT_MODEL']['model_id'] = model_id
     
-    # Redis 配置
-    redis_url = os.environ.get('REDIS_URL')
-    if redis_url:
-        config['CELERY_CONFIG']['broker_url'] = redis_url
-        config['CELERY_CONFIG']['result_backend'] = redis_url
-    
     # 日志级别
     log_level = os.environ.get('AI_ASSISTANT_LOG_LEVEL')
     if log_level:
@@ -99,7 +82,6 @@ DEFAULT_MODEL = APP_CONFIG['DEFAULT_MODEL']
 AGENT_CONFIG = APP_CONFIG['AGENT_CONFIG']
 TOOLS_CONFIG = APP_CONFIG['TOOLS_CONFIG']
 KNOWLEDGE_BASE_CONFIG = APP_CONFIG['KNOWLEDGE_BASE_CONFIG']
-CELERY_CONFIG = APP_CONFIG['CELERY_CONFIG']
 CACHE_CONFIG = APP_CONFIG['CACHE_CONFIG']
 SECURITY_CONFIG = APP_CONFIG['SECURITY_CONFIG']
 LOGGING_CONFIG = APP_CONFIG['LOGGING_CONFIG']

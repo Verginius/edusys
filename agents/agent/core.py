@@ -26,8 +26,8 @@ class EduSysAgent:
         self.config = config
         self.agent = get_agent(agent_type, config)
         
-    def run(self, 
-            prompt: str, 
+    def run(self,
+            prompt: str,
             context: Optional[Dict[str, Any]] = None,
             **kwargs) -> Union[str, Dict[str, Any]]:
         """
@@ -46,7 +46,7 @@ class EduSysAgent:
             
             # 合并上下文到 kwargs
             if context:
-                kwargs['context'] = context
+                prompt  = prompt + "\n" + str(context)
                 
             # 执行代理
             result = self.agent.run(prompt, **kwargs)
@@ -131,52 +131,6 @@ class EduSysAgent:
             
         return self.run(prompt)
         
-    def grade_assignment(self, 
-                         assignment_id: int,
-                         student_submission: str,
-                         standard_answer: str,
-                         grading_criteria: Optional[str] = None) -> str:
-        """
-        作业批改
-        
-        Args:
-            assignment_id (int): 作业ID
-            student_submission (str): 学生提交的作业
-            standard_answer (str): 标准答案
-            grading_criteria (Optional[str]): 评分标准
-            
-        Returns:
-            str: 批改结果
-        """
-        if self.agent_type != 'assignment_grading':
-            logger.warning("当前代理类型不是作业批改助手，可能不适用于作业批改")
-            
-        # 构造批改提示词
-        if grading_criteria:
-            prompt = f"""
-            请批改以下作业（满分100分）：
-            作业ID：{assignment_id}
-            评分标准：{grading_criteria}
-            标准答案：{standard_answer}
-            学生答案：{student_submission}
-            要求：
-            1. 给出具体分数
-            2. 指出主要错误
-            3. 提供改进建议
-            """
-        else:
-            prompt = f"""
-            请批改以下作业（满分100分）：
-            作业ID：{assignment_id}
-            标准答案：{standard_answer}
-            学生答案：{student_submission}
-            要求：
-            1. 给出具体分数
-            2. 指出主要错误
-            3. 提供改进建议
-            """
-            
-        return self.run(prompt)
 
 # 便捷函数
 def create_question_answering_agent(config: Optional[AgentConfig] = None) -> EduSysAgent:
@@ -203,17 +157,6 @@ def create_course_analysis_agent(config: Optional[AgentConfig] = None) -> EduSys
     """
     return EduSysAgent('course_analysis', config)
     
-def create_assignment_grading_agent(config: Optional[AgentConfig] = None) -> EduSysAgent:
-    """
-    创建作业批改助手代理
-    
-    Args:
-        config (Optional[AgentConfig]): 代理配置
-        
-    Returns:
-        EduSysAgent: 作业批改助手代理
-    """
-    return EduSysAgent('assignment_grading', config)
 
 def get_edusys_agent(agent_type: str = 'question_answering', 
                      config: Optional[AgentConfig] = None) -> EduSysAgent:

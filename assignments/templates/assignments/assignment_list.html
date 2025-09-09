@@ -9,7 +9,7 @@
       </li>
     {% endfor %}
   </ul>
-  {% if is_teacher %}
+  {% if is_teacher and course %}
     <div style="text-align:right;margin-top:18px;">
       <a href="{% url 'assignment_create' course.id %}" class="btn">新增作业</a>
     </div>

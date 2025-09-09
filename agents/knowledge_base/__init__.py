@@ -1,13 +1,14 @@
 """
 知识库模块
 """
-from .builder import KnowledgeBaseBuilder, knowledge_base_builder
-from .updater import KnowledgeBaseUpdater, knowledge_base_updater, update_knowledge_base
-from .documents import (
+from agents.knowledge_base.builder import KnowledgeBaseBuilder, knowledge_base_builder
+from agents.knowledge_base.updater import KnowledgeBaseUpdater, knowledge_base_updater, update_knowledge_base
+from agents.knowledge_base.documents import (
     create_document_from_course,
     create_document_from_announcement,
     create_document_from_assignment,
     create_document_from_faq,
+    create_document_from_course_file,
 )
 
 __all__ = [
@@ -20,4 +21,5 @@ __all__ = [
     'create_document_from_announcement',
     'create_document_from_assignment',
     'create_document_from_faq',
+    'create_document_from_course_file',
 ]

@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     "students",
     "users",
     "courses",
-    "assignments"
+    "assignments",
+    "agents"
 ]
 
 # REST Framework 配置
@@ -150,18 +151,3 @@ AUTH_USER_MODEL = 'users.User'
 MEDIA_URL = '/media/'
 #MEDIA_ROOT = os.path.join(BASE_DIR, 'course_files')
 MEDIA_ROOT = BASE_DIR
-
-# Celery 配置
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'UTC'
-# Celery Configuration
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'UTC'

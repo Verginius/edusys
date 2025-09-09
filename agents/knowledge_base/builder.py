@@ -6,9 +6,11 @@ from typing import List, Dict, Any
 from django.db import models
 from langchain.docstore.document import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from courses.models import Course, Announcement, CourseFile
 from courses.models import Course, Announcement
+from agents.knowledge_base.documents import create_document_from_course, create_document_from_announcement, create_document_from_assignment, create_document_from_course_file
 from assignments.models import Assignment
-from .documents import create_document_from_course, create_document_from_announcement, create_document_from_assignment
+from agents.knowledge_base.documents import create_document_from_course, create_document_from_announcement, create_document_from_assignment
 
 # 配置日志
 logger = logging.getLogger(__name__)
@@ -63,6 +65,12 @@ class KnowledgeBaseBuilder:
                 for announcement in announcements:
                     ann_docs = create_document_from_announcement(announcement)
                     docs.extend(ann_docs)
+                
+                # 创建课程文件文档
+                course_files = CourseFile.objects.filter(course=course)
+                for course_file in course_files:
+                    file_docs = create_document_from_course_file(course_file)
+                    docs.extend(file_docs)
                 
                 logger.info(f"课程 {course.id} 的文档已创建")
                 

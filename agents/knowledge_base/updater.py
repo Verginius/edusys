@@ -5,8 +5,8 @@ import logging
 from typing import List, Optional
 from django.utils import timezone
 from langchain.docstore.document import Document
-from .models import KnowledgeDocument
-from .builder import knowledge_base_builder
+from agents.models import KnowledgeDocument
+from agents.knowledge_base.builder import knowledge_base_builder
 
 # 配置日志
 logger = logging.getLogger(__name__)
@@ -115,7 +115,7 @@ class KnowledgeBaseUpdater:
         
         # 删除该课程的所有现有文档
         KnowledgeDocument.objects.filter(
-            source_type__in=['course_outline', 'announcement'],
+            source_type__in=['course_outline', 'announcement', 'course_file'],
             metadata__course_id=course_id
         ).delete()
         

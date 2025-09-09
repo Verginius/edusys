@@ -9,15 +9,15 @@ from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from django.db import transaction
 
-from ..models import AIInteraction, AgentConfig
-from ..serializers import (
-    AIInteractionSerializer, 
+from agents.models import AIInteraction, AgentConfig
+from agents.serializers import (
+    AIInteractionSerializer,
     AIInteractionCreateSerializer,
     AIInteractionFeedbackSerializer
 )
-from ..permissions import IsOwnerOrTeacher, check_course_access
-from ..agent.core import get_edusys_agent
-from .. import tasks
+from agents.permissions import IsOwnerOrTeacher, check_course_access
+from agents.agent.core import get_edusys_agent
+from agents import tasks
 
 # 配置日志
 logger = logging.getLogger(__name__)
@@ -27,6 +27,7 @@ class AIInteractionViewSet(viewsets.ModelViewSet):
     AI 交互记录视图集
     """
     permission_classes = [IsAuthenticated, IsOwnerOrTeacher]
+    queryset = AIInteraction.objects.all()
     
     def get_queryset(self):
         """
@@ -68,11 +69,11 @@ class AIInteractionViewSet(viewsets.ModelViewSet):
             "student_id": self.request.user.id
         }
         
-        # 执行异步 AI 处理
-        response = tasks.async_ai_process.delay(prompt, context, 'question_answering')
+        # 执行 AI 处理
+        response = tasks.async_ai_process(prompt, context, 'question_answering')
         
         # 更新交互记录的响应
-        interaction.response = f"请求已提交，任务ID: {response.id}"
+        interaction.response = response
         interaction.save()
     
     @action(detail=True, methods=['post'])
@@ -145,21 +146,21 @@ class AIInteractionViewSet(viewsets.ModelViewSet):
             "student_id": request.user.id
         }
         
-        # 执行异步 AI 处理
-        response_task = tasks.async_ai_process.delay(prompt, context, 'question_answering')
+        # 执行 AI 处理
+        response = tasks.async_ai_process(prompt, context, 'question_answering')
         
-        # 异步保存交互记录
-        interaction_task = tasks.save_ai_interaction.delay(
+        # 保存交互记录
+        interaction_id = tasks.save_ai_interaction(
             user_id=request.user.id,
             course_id=course_id,
             query=question,
-            response=f"请求已提交，任务ID: {response_task.id}",
+            response=response,
             interaction_type='question',
             context=context
         )
         
         return Response({
             "success": True,
-            "task_id": interaction_task.id,
-            "message": "请求已提交，正在处理中"
+            "interaction_id": interaction_id,
+            "message": "处理完成"
         })

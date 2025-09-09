@@ -2,7 +2,7 @@
 AI 助手数据序列化器
 """
 from rest_framework import serializers
-from .models import AIInteraction, KnowledgeDocument, AgentConfig, ToolUsage
+from agents.models import AIInteraction, KnowledgeDocument, AgentConfig, ToolUsage
 from users.models import User
 from courses.models import Course
 

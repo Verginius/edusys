@@ -3,13 +3,20 @@ AI 代理工厂
 用于创建不同类型的代理实例
 """
 from typing import Dict, Any, Optional, List
-from smolagents import CodeAgent, InferenceClientModel
+from smolagents import CodeAgent, OpenAIServerModel
 from agents.tools.retriever_tool import EduSysRetrieverTool
 from agents.agent.config import AgentConfig, AGENT_CONFIGS
 from agents.knowledge_base import update_knowledge_base
 import logging
+import os
 
 logger = logging.getLogger(__name__)
+
+from phoenix.otel import register
+from openinference.instrumentation.smolagents import SmolagentsInstrumentor
+
+register()
+SmolagentsInstrumentor().instrument()
 
 class AgentFactory:
     """
@@ -33,7 +40,7 @@ class AgentFactory:
         """
         return EduSysRetrieverTool(self.knowledge_docs)
         
-    def create_model(self, model_config: Dict[str, Any]) -> InferenceClientModel:
+    def create_model(self, model_config: Dict[str, Any]) -> OpenAIServerModel:
         """
         创建模型实例
         
@@ -41,13 +48,13 @@ class AgentFactory:
             model_config (Dict[str, Any]): 模型配置
             
         Returns:
-            InferenceClientModel: 模型实例
+            OpenAIServerModel: 模型实例
         """
-        model_id = model_config.get('model_id', 'Qwen/Qwen2.5-Coder-32B-Instruct')
+        model_id = model_config.get('model_id')
         model_kwargs = model_config.get('model_kwargs', {})
         
         logger.info(f"创建模型实例: {model_id}")
-        return InferenceClientModel(model_id=model_id, **model_kwargs)
+        return OpenAIServerModel(model_id=model_id, api_base="https://openrouter.ai/api/v1", api_key=os.getenv("OPENROUTER_API_KEY"), **model_kwargs)
         
     def create_agent(self, 
                      agent_type: str = 'question_answering',
@@ -89,6 +96,7 @@ class AgentFactory:
                 if 'edusys_retriever' in tool_names:
                     retriever_tool = self.create_retriever_tool()
                     tools.append(retriever_tool)
+                
             
             # 获取代理配置
             agent_config = config.get_agent_config()
@@ -131,17 +139,6 @@ class AgentFactory:
         """
         return self.create_agent('course_analysis', config)
         
-    def create_assignment_grading_agent(self, config: Optional[AgentConfig] = None) -> CodeAgent:
-        """
-        创建作业批改助手代理
-        
-        Args:
-            config (Optional[AgentConfig]): 自定义配置
-            
-        Returns:
-            CodeAgent: 作业批改助手代理
-        """
-        return self.create_agent('assignment_grading', config)
 
 # 全局代理工厂实例
 agent_factory = AgentFactory()

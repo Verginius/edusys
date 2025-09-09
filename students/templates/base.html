@@ -43,7 +43,8 @@
     <nav>
         <a href="/students/">学生管理</a>
         <a href="/courses/">课程管理</a>
-        <a href="/assignments/">智能答疑</a>
+        <a href="/assignments/">作业管理</a>
+        <a href="/agents/ai-assistant/">AI智能答疑</a>
         {% if request.user.is_authenticated %}
             <span style="margin-right:20px;">当前用户：{{ request.user.username }}</span>
             <a href="/users/logout/" class="btn-cancel">注销</a>

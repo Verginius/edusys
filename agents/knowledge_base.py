@@ -4,9 +4,9 @@
 """
 
 # 导入子模块
-from .knowledge_base.builder import KnowledgeBaseBuilder
-from .knowledge_base.updater import update_knowledge_base, knowledge_base_updater
-from .knowledge_base.documents import create_document_from_course, create_document_from_announcement, create_document_from_assignment
+from agents.knowledge_base.builder import KnowledgeBaseBuilder
+from agents.knowledge_base.updater import update_knowledge_base, knowledge_base_updater
+from agents.knowledge_base.documents import create_document_from_course, create_document_from_announcement, create_document_from_assignment
 
 # 重新导出主要函数和类
 __all__ = [

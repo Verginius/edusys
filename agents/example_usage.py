@@ -7,7 +7,7 @@ from django.test import Client
 from django.urls import reverse
 from django.contrib.auth.models import User
 from courses.models import Course, Student
-from .models import AIInteraction
+from agents.models import AIInteraction
 
 def example_api_usage():
     """
@@ -132,8 +132,8 @@ def example_direct_usage():
     print("\n=== AI 助手直接使用示例 ===")
     
     # 导入必要的模块
-    from .agent.core import get_edusys_agent
-    from . import tasks
+    from agents.agent.core import get_edusys_agent
+    from agents import tasks
     
     # 创建 AI 代理
     print("\n1. 创建 AI 代理:")

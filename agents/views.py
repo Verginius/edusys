@@ -14,9 +14,9 @@ from django.core.paginator import Paginator
 from django.db import transaction
 from django.conf import settings
 
-from .models import AIInteraction, AgentConfig
-from .agent.core import EduSysAgent, get_edusys_agent
-from . import tasks
+from agents.models import AIInteraction, AgentConfig
+from agents.agent.core import EduSysAgent, get_edusys_agent
+from agents import tasks
 from courses.models import Course
 
 # 配置日志
@@ -44,7 +44,7 @@ def check_ai_access(user, course):
     return False
 
 # 从 utils.py 导入工具函数
-from .utils import format_error_response, format_success_response
+from agents.utils import format_error_response, format_success_response
 
 @csrf_exempt
 @login_required
@@ -108,11 +108,11 @@ def ai_assistant_view(request, course_id):
             "student_id": request.user.id
         }
         
-        # 执行异步 AI 处理
+        # 执行 AI 处理
         response = tasks.async_ai_process(prompt, context, 'question_answering')
         
-        # 异步保存交互记录
-        interaction_task = tasks.save_ai_interaction.delay(
+        # 保存交互记录
+        interaction_id = tasks.save_ai_interaction(
             user_id=request.user.id,
             course_id=course_id,
             query=question,
@@ -124,10 +124,10 @@ def ai_assistant_view(request, course_id):
         # 返回成功响应
         return JsonResponse(
             format_success_response({
-                "task_id": interaction_task.id,
+                "interaction_id": interaction_id,
                 "query": question,
                 "response": response,
-                "message": "请求已提交，正在处理中"
+                "message": "处理完成"
             })
         )
         
@@ -352,3 +352,118 @@ def async_ai_process(prompt, context=None):
     except Exception as e:
         logger.error(f"异步 AI 处理过程中发生错误: {str(e)}")
         raise
+
+
+@csrf_exempt
+@login_required
+@require_http_methods(["POST"])
+def general_ai_assistant_view(request):
+    """
+    通用 AI 助手视图函数
+    处理用户提问并返回 AI 回答，不依赖于特定课程
+    
+    Args:
+        request: HTTP 请求对象
+        
+    Returns:
+        JsonResponse: AI 回答结果
+    """
+    try:
+        # 解析请求数据
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse(
+                format_error_response(
+                    "INVALID_REQUEST",
+                    "请求数据格式错误"
+                ),
+                status=400
+            )
+        
+        question = data.get('query')
+        interaction_type = data.get('interaction_type', 'question')
+        
+        # 验证参数
+        if not question:
+            return JsonResponse(
+                format_error_response(
+                    "MISSING_PARAMETER",
+                    "缺少必要参数: query"
+                ),
+                status=400
+            )
+        
+        # 异步执行 AI 处理
+        # 构造提示词
+        prompt = f"用户问题：{question}"
+        context = {
+            "user_id": request.user.id,
+            "interaction_type": interaction_type
+        }
+        
+        # 执行 AI 处理
+        response = tasks.async_ai_process(prompt, context, 'question_answering')
+        
+        # 保存交互记录（不关联特定课程）
+        interaction_id = tasks.save_ai_interaction(
+            user_id=request.user.id,
+            course_id=None,  # 不关联特定课程
+            query=question,
+            response=response,
+            interaction_type=interaction_type,
+            context=context
+        )
+        
+        # 返回成功响应
+        return JsonResponse(
+            format_success_response({
+                "interaction_id": interaction_id,
+                "query": question,
+                "response": response,
+                "message": "处理完成"
+            })
+        )
+        
+    except Exception as e:
+        logger.error(f"通用 AI 助手处理过程中发生错误: {str(e)}")
+        return JsonResponse(
+            format_error_response(
+                "INTERNAL_ERROR",
+                "处理请求时发生内部错误",
+                {"error_details": str(e)}
+            ),
+            status=500
+        )
+
+@login_required
+def ai_assistant_page(request):
+    """
+    AI 助手页面视图函数
+    渲染 AI 助手页面模板
+    
+    Args:
+        request: HTTP 请求对象
+        
+    Returns:
+        HttpResponse: 渲染后的 AI 助手页面
+    """
+    try:
+        # 获取用户的 AI 交互历史记录
+        interactions = AIInteraction.objects.filter(user=request.user).order_by('-timestamp')[:10]
+        
+        # 准备模板上下文
+        context = {
+            'interactions': interactions,
+        }
+        
+        # 渲染模板
+        return render(request, 'agents/ai_assistant.html', context)
+        
+    except Exception as e:
+        logger.error(f"渲染 AI 助手页面时发生错误: {str(e)}")
+        # 如果出现错误，仍然渲染页面但不显示历史记录
+        return render(request, 'agents/ai_assistant.html', {
+            'interactions': [],
+            'error_message': '加载历史记录时出现错误'
+        })

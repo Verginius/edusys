@@ -25,7 +25,8 @@ class EduSysRetrieverTool(Tool):
         "course_id": {
             "type": "integer",
             "description": "课程ID，用于限定检索范围",
-            "required": False
+            "required": False,
+            "nullable": True
         }
     }
     output_type = "string"

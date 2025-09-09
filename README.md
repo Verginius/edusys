@@ -1,110 +1,143 @@
-# EduSys 教学辅助系统
+# EduSys - 教学辅助系统
 
-本项目基于 Django 框架，包含课程管理、学生管理、作业管理、用户认证和前端页面。
+本项目为基于 Django 的教学辅助系统，包含课程管理、学生管理、作业管理、用户认证和前端页面。
 
-## 功能模块
-- 课程管理：课程创建、编辑、学生选课、课程公告、课程文件上传与下载
-- 学生管理：学生信息录入、查询、分班
-- 作业管理：作业发布、学生提交、教师批改、成绩反馈
-- 用户认证：自定义用户模型，支持学号/工号，区分教师与学生权限
-- 文件管理：课程相关文件上传、下载、删除，支持多种格式
-- 公告系统：课程公告发布、查看、删除
-- AI 助手：基于 RAG 技术的学生答疑、课程安排辅助和作业智能批改
-- 前端页面：美观卡片式布局，支持权限控制与交互优化
+## 功能特点
 
-## 技术栈
- - Django 5.2
- - Python 3.11
- - SQLite3（默认，可扩展为 MySQL/PostgreSQL）
- - HTML/CSS（Django 模板）
- - Bootstrap（页面美化）
- - Redis（异步任务队列）
- - Celery（分布式任务队列）
- - Langchain（RAG 应用开发框架）
- - Smolagents（轻量级 AI 代理框架）
+- 课程管理：创建和管理课程信息
+- 学生管理：管理学生信息和选课情况
+- 作业管理：发布作业、提交作业和批改作业
+- 用户认证：用户注册、登录和权限管理
+- AI 助手：基于 AI 的智能问答、课程分析和作业批改功能
 
-## 目录结构
-- edusys/ 主项目配置
-- courses/ 课程管理
-- students/ 学生管理
-- assignments/ 作业管理
-- agents/ AI 助手应用（RAG 检索增强生成）
-- users/ 用户认证
+## 安装
 
-## 启动方法
-1. 激活 Python 环境 `conda activate [env name]`
-2. 安装依赖：`pip install -r requirements.txt`
-3. 迁移数据库：`python manage.py migrate`
-4. 初始化 agents 应用：`python manage.py init_agents`
-5. 设置 LLM 环境变量（可选，参考 LLM 设置说明）
-6. 启动 Celery worker（新终端）：`celery -A edusys worker -l info`
-7. 启动服务：`python manage.py runserver`
-8. 访问： http://127.0.0.1:8000/
+### 环境要求
 
+- Python 3.11+
+- Django 5.2
+- 其他依赖项请参考 `requirements.txt` 文件
 
-## 权限说明
+### 环境变量配置
 
-- 教师用户：可管理课程、发布公告、上传/删除课程文件、批改作业
-- 学生用户：可选课、提交作业、下载课程文件、查看公告
+项目使用环境变量来配置敏感信息和可选设置。请参考 `.env.example` 文件创建您自己的 `.env` 配置文件：
 
-## 媒体文件配置
-
-- 文件上传路径：`media/`
-- 访问方式：开发环境自动路由，生产环境需配置 Nginx/Apache
-
-## 页面美化
-
-- 采用卡片式布局，主色调突出
-- 支持下拉菜单、按钮交互优化
-- 响应式设计，兼容主流浏览器
-
-## 常见问题
-
-- 数据库迁移冲突：请确保所有迁移文件同步，必要时删除数据库重新迁移
-- 媒体文件无法访问：检查 `settings.py` 中 `MEDIA_URL` 和 `MEDIA_ROOT` 配置
-- 权限问题：请确认用户身份及分组设置
-
-## 参考与扩展
-
-## LLM 设置说明
-
-系统支持多种方式配置大语言模型，可根据硬件条件和需求选择：
-
-### 1. API 方式（推荐）
-支持主流 AI 平台的 API 接口：
-```bash
-# OpenAI 兼容接口
-export AI_ASSISTANT_MODEL_ID="openai/gpt-4"
-export OPENAI_API_KEY="your-api-key"
-
-# HuggingFace Inference API
-export AI_ASSISTANT_MODEL_ID="huggingface/Qwen/Qwen2.5-Coder-32B-Instruct"
-export HUGGINGFACE_API_KEY="your-api-key"
+```
+cp .env.example .env
 ```
 
-### 2. 本地 LLM 设置
-支持本地部署的大语言模型：
+然后根据您的实际需求修改 `.env` 文件中的配置项。
 
-**Ollama 方式**：
-```bash
-# 安装 Ollama 后拉取模型
-ollama pull qwen2.5-coder:32b
-# 设置环境变量
-export AI_ASSISTANT_MODEL_ID="ollama/qwen2.5-coder:32b"
+### 安装步骤
+
+1. 克隆项目代码：
+   ```
+   git clone <项目地址>
+   cd edusys
+   ```
+
+2. 创建虚拟环境：
+   ```
+   python -m venv venv
+   source venv/bin/activate  # Linux/Mac
+   # 或
+   venv\Scripts\activate  # Windows
+   ```
+
+3. 安装依赖：
+   ```
+   pip install -r requirements.txt
+   ```
+
+4. 安装项目包（开发模式）：
+   ```
+   pip install -e .
+   ```
+
+### 环境变量配置
+
+项目使用环境变量来配置敏感信息和可选设置。系统会自动加载 `.env` 文件中的环境变量。
+
+1. 复制 `.env.example` 文件并根据您的实际需求修改配置：
+   ```
+   cp .env.example .env
+   ```
+
+2. 编辑 `.env` 文件，设置必要的环境变量。
+
+注意：`.env` 文件包含敏感信息，不应提交到版本控制系统中。
+
+## 使用说明
+
+### 数据库设置
+
+1. 创建数据库迁移：
+   ```
+   python manage.py makemigrations
+   ```
+
+2. 应用数据库迁移：
+   ```
+   python manage.py migrate
+   ```
+
+### 运行开发服务器
+
 ```
-
-**本地模型文件**：
-```bash
-# 下载模型文件到 models/ 目录
-export AI_ASSISTANT_MODEL_ID="./models/qwen2.5-coder-32b"
-```
-
-### 3. 配置生效
-环境变量需在启动服务前设置：
-```bash
-# 设置环境变量
-export AI_ASSISTANT_MODEL_ID="your-model-id"
-# 启动服务
 python manage.py runserver
 ```
-- 可根据 Canvas 平台功能持续扩展，如讨论区、成绩统计、通知推送等
+
+### 创建超级用户
+
+```
+python manage.py createsuperuser
+```
+
+### 使用 AI 助手功能
+
+项目包含基于 AI 的智能助手功能，可以用于：
+
+1. 学生答疑：回答学生关于课程内容的问题
+2. 课程分析：分析课程数据，提供教学改进建议
+
+AI 助手功能依赖于 Hugging Face 模型，您需要在 `.env` 文件中配置 `HF_TOKEN` 环境变量以访问这些模型。
+
+#### 支持的模型
+
+默认情况下，项目使用以下模型：
+- 主要模型：`Qwen/Qwen2.5-Coder-32B-Instruct`
+- 备用模型：`Qwen/Qwen2.5-7B-Instruct`
+
+您可以在 `.env` 文件中通过 `DEFAULT_MODEL_ID` 和 `FALLBACK_MODEL_ID` 环境变量来修改这些设置。
+
+## 包结构
+
+项目已修改为可安装的包形式，可以直接通过包名导入模块：
+
+```python
+# 导入 agents 模块
+from agents import models, views, tasks
+
+# 导入特定功能
+from agents.agent.core import EduSysAgent
+from agents.knowledge_base import update_knowledge_base
+```
+
+## 开发指南
+
+### 代码规范
+
+- 遵循 PEP 8 代码规范
+- 使用类型注解
+- 编写单元测试
+
+### 贡献代码
+
+1. Fork 项目
+2. 创建功能分支
+3. 提交更改
+4. 发起 Pull Request
+
+## 许可证
+
+本项目采用 MIT 许可证，详情请见 LICENSE 文件。
