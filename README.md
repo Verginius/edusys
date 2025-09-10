@@ -65,15 +65,10 @@ cp .env.example .env
 
 ### 数据库设置
 
-1. 创建数据库迁移：
-   ```
-   python manage.py makemigrations
-   ```
-
-2. 应用数据库迁移：
-   ```
-   python manage.py migrate
-   ```
+数据库迁移：
+```
+python manage.py migrate
+```
 
 ### 运行开发服务器
 
@@ -81,11 +76,6 @@ cp .env.example .env
 python manage.py runserver
 ```
 
-### 创建超级用户
-
-```
-python manage.py createsuperuser
-```
 
 ### 使用 AI 助手功能
 
@@ -98,40 +88,6 @@ AI 助手功能依赖于 Hugging Face 模型，您需要在 `.env` 文件中配�
 
 #### 支持的模型
 
-默认情况下，项目使用以下模型：
-- 主要模型：`Qwen/Qwen2.5-Coder-32B-Instruct`
-- 备用模型：`Qwen/Qwen2.5-7B-Instruct`
+默认情况下，项目使用支持OpenAI以及与OpenAI接口相兼容的api
 
-您可以在 `.env` 文件中通过 `DEFAULT_MODEL_ID` 和 `FALLBACK_MODEL_ID` 环境变量来修改这些设置。
-
-## 包结构
-
-项目已修改为可安装的包形式，可以直接通过包名导入模块：
-
-```python
-# 导入 agents 模块
-from agents import models, views, tasks
-
-# 导入特定功能
-from agents.agent.core import EduSysAgent
-from agents.knowledge_base import update_knowledge_base
-```
-
-## 开发指南
-
-### 代码规范
-
-- 遵循 PEP 8 代码规范
-- 使用类型注解
-- 编写单元测试
-
-### 贡献代码
-
-1. Fork 项目
-2. 创建功能分支
-3. 提交更改
-4. 发起 Pull Request
-
-## 许可证
-
-本项目采用 MIT 许可证，详情请见 LICENSE 文件。
+您可以在 `.env` 文件中通过 `OPENAI_API_KEY` 和 `OPENAI_BASE_URL` 环境变量来修改这些设置。
