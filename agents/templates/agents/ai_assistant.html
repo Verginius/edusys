@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="chat-container">
+    <h2>AI 智能答疑助手
+        <form method="post" action="{% url 'agents:clear_ai_history' %}" style="display: inline; float: right;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">清空历史</button>
+        </form>
+    </h2>
+    <div id="chat-history">
+        {% for interaction in interactions %}
+        <div class="interaction">
+            <p><strong>你:</strong> {{ interaction.query }}</p>
+            <p><strong>AI:</strong> {{ interaction.response }}</p>
+            <span class="timestamp">{{ interaction.timestamp|date:"Y-m-d H:i:s" }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    <form id="ai-form">
+        <input type="text" id="question" placeholder="请输入你的问题..." required>
+        <button type="submit">发送</button>
+    </form>
+</div>
+
+<script>
+document.getElementById('ai-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const questionInput = document.getElementById('question');
+    const query = questionInput.value;
+
+    fetch('{% url "agents:ask_ai" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ query: query })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const history = document.getElementById('chat-history');
+            const newInteraction = document.createElement('div');
+            newInteraction.className = 'interaction';
+            newInteraction.innerHTML = `<p><strong>你:</strong> ${query}</p><p><strong>AI:</strong> ${data.data.response}</p><span class="timestamp">${data.data.timestamp}</span>`;
+            history.appendChild(newInteraction);
+            questionInput.value = '';
+            history.scrollTop = history.scrollHeight;
+        } else {
+            alert('错误: ' + data.error.message);
+        }
+    });
+});
+</script>
+<style>
+    .chat-container { max-width: 800px; margin: auto; padding: 20px; }
+    #chat-history { height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+    .interaction { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+    .timestamp { font-size: 0.8em; color: #999; }
+</style>
+{% endblock %}

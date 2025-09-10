@@ -23,12 +23,13 @@ from . import views
 
 urlpatterns = [
     path("", views.hello, name="hello"),
-    path("admin/login/", views.AdminLoginView.as_view(), name="admin:login"),
+    path("admin/login/", views.AdminLoginView.as_view(), name="admin_login"),
     path("admin/", admin.site.urls),
     path("students/", include("students.urls")),
     path("users/", include("users.urls")),
     path("courses/", include("courses.urls")),
     path("assignments/", include("assignments.urls")),
+    path("agents/", include("agents.urls", namespace="agents")),
 ]
 
 # 媒体文件开发环境路由

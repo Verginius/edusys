@@ -101,3 +101,20 @@ def assignment_delete(request, assignment_id):
         assignment.delete()
         return redirect('assignment_list', course_id=course_id)
     return render(request, 'assignments/assignment_confirm_delete.html', {'assignment': assignment})
+
+
+@login_required
+def all_assignments_list(request):
+    """
+    显示所有作业的列表
+    """
+    # 只有教师可以查看所有作业
+    if not (request.user.is_staff or request.user.is_superuser):
+        messages.error(request, '无权限')
+        return redirect('student_list')  # 重定向到学生列表页面
+    
+    assignments = Assignment.objects.all()
+    return render(request, 'assignments/assignment_list.html', {
+        'assignments': assignments,
+        'is_teacher': True,
+    })

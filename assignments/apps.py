@@ -2,8 +2,7 @@ from django.apps import AppConfig
 import os
 from django.conf import settings
 
-
-class StudentsConfig(AppConfig):
+class AssignmentsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'students'
-    path = os.path.join(settings.BASE_DIR, 'students')
+    name = 'assignments'
+    path = os.path.join(settings.BASE_DIR, 'assignments')

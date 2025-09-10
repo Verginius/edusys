@@ -1,0 +1,41 @@
+[project]
+name = "edusys"
+version = "0.1.0"
+description = "本项目为基于 Django 的教学辅助系统，包含课程管理、学生管理、作业管理、用户认证和前端页面。请优先生成与 Canvas 类似的功能模块和代码结构。"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "crispy-bootstrap5==0.7",
+    "datasets>=4.0.0",
+    "django==5.2",
+    "django-cors-headers==4.3.1",
+    "django-crispy-forms==2.1",
+    "django-extensions==3.2.3",
+    "django-filter>=23.5",
+    "djangorestframework>=3.14.0",
+    "gunicorn>=21.2.0",
+    "langchain>=0.3.27",
+    "langchain-community>=0.3.29",
+    "pandas>=2.3.2",
+    "pillow==10.1.0",
+    "psycopg2-binary>=2.9.9",
+    "python-decouple==3.8",
+    "python-dotenv>=1.0.0",
+    "pytz>=2025.2",
+    "rank-bm25>=0.2.2",
+    "requests==2.32.5",
+    "sentence-transformers>=5.1.0",
+    "smolagents[openai]>=1.21.3",
+]
+
+
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["agents*", "assignments*", "courses*", "edusys*", "query*", "students*", "users*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.md", "*.txt", "*.yaml", "*.yml", "*.json", "*.toml", "*.cfg", "*.conf", "*.ini", "*.sql", "*.html", "*.css", "*.js", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.svg", "*.ico", "*.woff", "*.woff2", "*.ttf", "*.eot"]
