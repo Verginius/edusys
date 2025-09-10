@@ -8,7 +8,7 @@ from django.conf import settings
 AI_ASSISTANT_CONFIG = {
     # 默认模型配置
     'DEFAULT_MODEL': {
-        'model_id': 'Qwen/Qwen2.5-Coder-32B-Instruct',
+        'model_id': os.getenv["MODEL_ID"],
         'model_kwargs': {
             'temperature': 0.7,
             'max_tokens': 1000,

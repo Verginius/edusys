@@ -3,6 +3,7 @@ AI 代理配置管理
 """
 from typing import Dict, Any, Optional
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +15,7 @@ class AgentConfig:
     # 默认配置
     DEFAULT_CONFIG = {
         # 模型配置
-        'model_id': 'qwen/qwen3-coder',
+        'model_id': os.getenv["MODEL_ID"],
         'model_kwargs': {
             'temperature': 0.7,
             'max_tokens': 4196,
@@ -112,14 +113,14 @@ class AgentConfig:
 # 预定义的代理配置
 AGENT_CONFIGS = {
     'question_answering': AgentConfig({
-        'model_id': 'qwen/qwen3-coder',
+        'model_id': os.getenv["MODEL_ID"],
         'max_steps': 6,
         'verbosity_level': 2,
         'tools': ['edusys_retriever']
     }),
     
     'course_analysis': AgentConfig({
-        'model_id': 'qwen/qwen3-coder',
+        'model_id': os.getenv["MODEL_ID"],
         'max_steps': 8,
         'verbosity_level': 2,
         'tools': ['edusys_retriever']
