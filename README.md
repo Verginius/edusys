@@ -36,7 +36,7 @@ cp .env.example .env
    cd edusys
    ```
 
-2. 创建虚拟环境：
+2. 创建虚拟环境(python>3.11)：
    ```
    python -m venv venv
    source venv/bin/activate  # Linux/Mac
@@ -44,12 +44,7 @@ cp .env.example .env
    venv\Scripts\activate  # Windows
    ```
 
-3. 安装依赖：
-   ```
-   pip install -r requirements.txt
-   ```
-
-4. 安装项目包（开发模式）：
+3. 安装项目包（开发模式）：
    ```
    pip install -e .
    ```
@@ -65,7 +60,6 @@ cp .env.example .env
 
 2. 编辑 `.env` 文件，设置必要的环境变量。
 
-注意：`.env` 文件包含敏感信息，不应提交到版本控制系统中。
 
 ## 使用说明
 
