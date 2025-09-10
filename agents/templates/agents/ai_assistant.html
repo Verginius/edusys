@@ -4,6 +4,10 @@
 <div class="chat-container" style="max-width: 800px; margin: 32px auto; display: flex; flex-direction: column; height: 70vh;">
     <h2 style="text-align: center; color: #333; margin-bottom: 20px;">AI 智能答疑助手</h2>
     
+    <div style="text-align: right; margin-bottom: 10px;">
+        <a href="{% url 'agents:clear_chat_history' %}" class="btn btn-danger" onclick="return confirm('您确定要清空所有聊天记录吗？此操作不可恢复。');">清空历史</a>
+    </div>
+    
     {% if error_message %}
     <div style="color: red; margin-bottom: 20px;">{{ error_message }}</div>
     {% endif %}
@@ -48,9 +52,9 @@
         chatHistory.scrollTop = chatHistory.scrollHeight;
     }
     
-    // 页面加载完成后滚动到底部
+    // 页面加载完成后，不再自动滚动到底部，以便用户从头开始查看历史记录
     document.addEventListener('DOMContentLoaded', function() {
-        scrollToBottom();
+        // scrollToBottom(); // 注释掉此行，以防止页面加载时滚动到底部
     });
     
     document.getElementById('ai-form').addEventListener('submit', function(e) {

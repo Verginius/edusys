@@ -18,6 +18,7 @@ urlpatterns = [
     # 通用 AI 助手接口
     path('ai-assistant/', views.ai_assistant_page, name='ai_assistant_page'),
     path('ai-assistant/ask/', views.general_ai_assistant_view, name='general_ai_assistant'),
+    path('ai-assistant/clear/', views.clear_chat_history, name='clear_chat_history'),
     
     # API 接口
     path('api/', include('agents.api.urls')),

@@ -3,7 +3,7 @@ AI 助手视图函数
 """
 import json
 import logging
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -170,7 +170,7 @@ def ai_interactions_history(request):
             interactions = interactions.filter(interaction_type=interaction_type)
             
         # 分页
-        paginator = Paginator(interactions.order_by('-timestamp'), limit)
+        paginator = Paginator(interactions.order_by('timestamp'), limit)
         page_number = request.GET.get('page', 1)
         page_obj = paginator.get_page(page_number)
         
@@ -369,6 +369,8 @@ def general_ai_assistant_view(request):
         JsonResponse: AI 回答结果
     """
     try:
+        logger.info(f"User in general_ai_assistant_view: {request.user}")
+        logger.info(f"User is authenticated: {request.user.is_authenticated}")
         # 解析请求数据
         try:
             data = json.loads(request.body)
@@ -450,7 +452,7 @@ def ai_assistant_page(request):
     """
     try:
         # 获取用户的 AI 交互历史记录
-        interactions = AIInteraction.objects.filter(user=request.user).order_by('-timestamp')[:10]
+        interactions = AIInteraction.objects.filter(user=request.user).order_by('timestamp')[:10]
         
         # 准备模板上下文
         context = {
@@ -467,3 +469,19 @@ def ai_assistant_page(request):
             'interactions': [],
             'error_message': '加载历史记录时出现错误'
         })
+
+@login_required
+def clear_chat_history(request):
+    """
+    清空当前用户的 AI 聊天历史记录
+    """
+    try:
+        # 删除当前用户的所有 AIInteraction 记录
+        AIInteraction.objects.filter(user=request.user).delete()
+        # 重定向回 AI 助手页面
+        return redirect('agents:ai_assistant_page')
+    except Exception as e:
+        logger.error(f"清空聊天记录时发生错误: {str(e)}")
+        # 如果出现错误，可以重定向回原页面并带上错误消息
+        # 为了简单起见，这里我们只重定向，错误会记录在日志中
+        return redirect('agents:ai_assistant_page')
