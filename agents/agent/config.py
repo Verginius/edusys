@@ -15,7 +15,7 @@ class AgentConfig:
     # 默认配置
     DEFAULT_CONFIG = {
         # 模型配置
-        'model_id': os.getenv["MODEL_ID"],
+        'model_id': os.getenv("MODEL_ID"),
         'model_kwargs': {
             'temperature': 0.7,
             'max_tokens': 4196,
@@ -113,14 +113,14 @@ class AgentConfig:
 # 预定义的代理配置
 AGENT_CONFIGS = {
     'question_answering': AgentConfig({
-        'model_id': os.getenv["MODEL_ID"],
+        'model_id': os.getenv("MODEL_ID"),
         'max_steps': 6,
         'verbosity_level': 2,
         'tools': ['edusys_retriever']
     }),
     
     'course_analysis': AgentConfig({
-        'model_id': os.getenv["MODEL_ID"],
+        'model_id': os.getenv("MODEL_ID"),
         'max_steps': 8,
         'verbosity_level': 2,
         'tools': ['edusys_retriever']

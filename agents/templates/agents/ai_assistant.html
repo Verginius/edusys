@@ -1,61 +1,196 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="chat-container">
-    <h2>AI 智能答疑助手
-        <form method="post" action="{% url 'agents:clear_ai_history' %}" style="display: inline; float: right;">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger btn-sm">清空历史</button>
-        </form>
-    </h2>
-    <div id="chat-history">
+<div class="chat-container" style="max-width: 800px; margin: 32px auto; display: flex; flex-direction: column; height: 70vh;">
+    <h2 style="text-align: center; color: #333; margin-bottom: 20px;">AI 智能答疑助手</h2>
+    
+    <div style="text-align: right; margin-bottom: 10px;">
+        <a href="{% url 'agents:clear_chat_history' %}" class="btn btn-danger" onclick="return confirm('您确定要清空所有聊天记录吗？此操作不可恢复。');">清空历史</a>
+    </div>
+    
+    {% if error_message %}
+    <div style="color: red; margin-bottom: 20px;">{{ error_message }}</div>
+    {% endif %}
+    
+    <!-- 对话历史区域 -->
+    <div id="chat-history" style="flex: 1; overflow-y: auto; border: 1px solid #ccc; border-radius: 6px; padding: 15px; background: #f9f9f9; margin-bottom: 20px;">
         {% for interaction in interactions %}
-        <div class="interaction">
-            <p><strong>你:</strong> {{ interaction.query }}</p>
-            <p><strong>AI:</strong> {{ interaction.response }}</p>
-            <span class="timestamp">{{ interaction.timestamp|date:"Y-m-d H:i:s" }}</span>
+        <div class="message user-message" style="margin-bottom: 15px;">
+            <div style="font-weight: bold; color: #4a90e2;">你：</div>
+            <div>{{ interaction.query }}</div>
+            <div style="font-size: 0.8em; color: #999; text-align: right;">{{ interaction.timestamp|date:"Y-m-d H:i:s" }}</div>
         </div>
+        <div class="message ai-message" style="margin-bottom: 15px; background: #e8f4ff; padding: 10px; border-radius: 6px;">
+            <div style="font-weight: bold; color: #50e3c2;">AI助手：</div>
+            <div>{{ interaction.response }}</div>
+        </div>
+        {% empty %}
+        <div id="no-history" style="text-align: center; color: #999;">暂无对话历史</div>
         {% endfor %}
     </div>
-    <form id="ai-form">
-        <input type="text" id="question" placeholder="请输入你的问题..." required>
-        <button type="submit">发送</button>
-    </form>
+    
+    <!-- 输入区域 -->
+    <div style="margin-bottom: 20px;">
+        <form id="ai-form" style="display: flex; gap: 10px;">
+            <input type="text" id="question" placeholder="请输入您的问题..." required
+                style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px;">
+            <button type="submit" class="btn">发送</button>
+        </form>
+    </div>
+    
+    <div id="loading" style="display: none; text-align: center; color: #666; margin: 20px 0;">
+        AI助手正在思考中...
+    </div>
 </div>
 
 <script>
-document.getElementById('ai-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const questionInput = document.getElementById('question');
-    const query = questionInput.value;
-
-    fetch('{% url "agents:ask_ai" %}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: JSON.stringify({ query: query })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            const history = document.getElementById('chat-history');
-            const newInteraction = document.createElement('div');
-            newInteraction.className = 'interaction';
-            newInteraction.innerHTML = `<p><strong>你:</strong> ${query}</p><p><strong>AI:</strong> ${data.data.response}</p><span class="timestamp">${data.data.timestamp}</span>`;
-            history.appendChild(newInteraction);
-            questionInput.value = '';
-            history.scrollTop = history.scrollHeight;
-        } else {
-            alert('错误: ' + data.error.message);
-        }
+    // 获取聊天历史容器
+    const chatHistory = document.getElementById('chat-history');
+    
+    // 滚动到底部
+    function scrollToBottom() {
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+    
+    // 页面加载完成后，不再自动滚动到底部，以便用户从头开始查看历史记录
+    document.addEventListener('DOMContentLoaded', function() {
+        // scrollToBottom(); // 注释掉此行，以防止页面加载时滚动到底部
     });
-});
+    
+    document.getElementById('ai-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const question = document.getElementById('question').value;
+        if (!question.trim()) {
+            alert('请输入问题');
+            return;
+        }
+        
+        // 显示加载状态
+        document.getElementById('loading').style.display = 'block';
+        
+        // 禁用输入和按钮
+        document.getElementById('question').disabled = true;
+        document.querySelector('#ai-form button').disabled = true;
+        
+        // 添加用户消息到聊天历史
+        const userMessageDiv = document.createElement('div');
+        userMessageDiv.className = 'message user-message';
+        userMessageDiv.style.marginBottom = '15px';
+        userMessageDiv.innerHTML = `
+            <div style="font-weight: bold; color: #4a90e2;">你：</div>
+            <div>${question}</div>
+            <div style="font-size: 0.8em; color: #999; text-align: right;">刚刚</div>
+        `;
+        chatHistory.appendChild(userMessageDiv);
+        
+        // 清空输入框
+        document.getElementById('question').value = '';
+        
+        // 滚动到底部
+        scrollToBottom();
+        
+        // 发送请求
+        fetch('{% url "agents:general_ai_assistant" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                query: question,
+                interaction_type: 'question'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // 隐藏加载状态
+            document.getElementById('loading').style.display = 'none';
+            
+            // 启用输入和按钮
+            document.getElementById('question').disabled = false;
+            document.querySelector('#ai-form button').disabled = false;
+            
+            if (data.success) {
+                // 添加AI消息到聊天历史
+                const aiMessageDiv = document.createElement('div');
+                aiMessageDiv.className = 'message ai-message';
+                aiMessageDiv.style.marginBottom = '15px';
+                aiMessageDiv.style.background = '#e8f4ff';
+                aiMessageDiv.style.padding = '10px';
+                aiMessageDiv.style.borderRadius = '6px';
+                aiMessageDiv.innerHTML = `
+                    <div style="font-weight: bold; color: #50e3c2;">AI助手：</div>
+                    <div>${data.data.response}</div>
+                `;
+                chatHistory.appendChild(aiMessageDiv);
+                
+                // 移除"暂无对话历史"提示
+                const noHistory = document.getElementById('no-history');
+                if (noHistory) {
+                    noHistory.remove();
+                }
+            } else {
+                // 添加错误消息到聊天历史
+                const errorMessageDiv = document.createElement('div');
+                errorMessageDiv.className = 'message error-message';
+                errorMessageDiv.style.marginBottom = '15px';
+                errorMessageDiv.style.background = '#ffe8e8';
+                errorMessageDiv.style.padding = '10px';
+                errorMessageDiv.style.borderRadius = '6px';
+                errorMessageDiv.innerHTML = `
+                    <div style="font-weight: bold; color: #d0021b;">错误：</div>
+                    <div>请求失败：${data.error.message}</div>
+                    ${data.error.details && data.error.details.error_details ?
+                      `<div style="margin-top: 5px; font-size: 0.9em; color: #666;">详细信息：${data.error.details.error_details}</div>` :
+                      ''}
+                `;
+                chatHistory.appendChild(errorMessageDiv);
+            }
+            
+            // 滚动到底部
+            scrollToBottom();
+        })
+        .catch(error => {
+            // 隐藏加载状态
+            document.getElementById('loading').style.display = 'none';
+            
+            // 启用输入和按钮
+            document.getElementById('question').disabled = false;
+            document.querySelector('#ai-form button').disabled = false;
+            
+            // 添加错误消息到聊天历史
+            const errorMessageDiv = document.createElement('div');
+            errorMessageDiv.className = 'message error-message';
+            errorMessageDiv.style.marginBottom = '15px';
+            errorMessageDiv.style.background = '#ffe8e8';
+            errorMessageDiv.style.padding = '10px';
+            errorMessageDiv.style.borderRadius = '6px';
+            errorMessageDiv.innerHTML = `
+                <div style="font-weight: bold; color: #d0021b;">错误：</div>
+                <div>请求出错：${error.message}</div>
+            `;
+            chatHistory.appendChild(errorMessageDiv);
+            
+            // 滚动到底部
+            scrollToBottom();
+        });
+    });
+    
+    // 获取 CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 </script>
-<style>
-    .chat-container { max-width: 800px; margin: auto; padding: 20px; }
-    #chat-history { height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
-    .interaction { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
-    .timestamp { font-size: 0.8em; color: #999; }
-</style>
 {% endblock %}

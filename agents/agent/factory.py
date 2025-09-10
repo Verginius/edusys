@@ -48,7 +48,7 @@ class AgentFactory:
         model_kwargs = model_config.get('model_kwargs', {})
         
         logger.info(f"创建模型实例: {model_id}")
-        return OpenAIServerModel(model_id=model_id, api_base=os.getenv("OPENAI_BASE_URL"), api_key=os.getenv("OPENAI_API_KEY"), **model_kwargs)
+        return OpenAIServerModel(model_id=model_id, api_base=os.getenv("BASE_URL"), api_key=os.getenv("API_KEY"), **model_kwargs)
         
     def create_agent(self, 
                      agent_type: str = 'question_answering',
